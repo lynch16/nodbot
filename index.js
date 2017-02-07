@@ -6,10 +6,20 @@ var board = new five.Board({
   io: new BeagleBone()
 });
 
+//logger Setup
+var gyroLogger= fs.createWriteStream('log/gyroData.txt', {
+  flags: 'a'
+});
+var accLogger= fs.createWriteStream('log/accData.txt', {
+  flags: 'a'
+});
+
+var led, imu, servos, distance, gyroInput, accInput;
+
 board.on("ready", function() {
 
 //Setup RGB LED (status indicator)
-  var led = new five.Led.RGB({
+  led = new five.Led.RGB({
    pins: {
       red: "P9_21",
       green: "P9_14",
@@ -19,13 +29,13 @@ board.on("ready", function() {
  });
 
 //Setup IMU (motion detector)
-  var imu = new five.IMU({
+  imu = new five.IMU({
      controller: "MPU6050",
    freq: 100
  });
 
 //Setup drivetrain
-  // var servos = {};
+  // servos = {};
   // servos.left = new five.Servo ({
   //   pin: "P8_13",
   //   type: "continuous"
@@ -38,7 +48,7 @@ board.on("ready", function() {
   // servos.both = new five.Servos([servos.left, servos.right]);
 
 //Setup distance sensors
-  // var distance = {};
+  // distance = {};
   // distance.irRight = new five.Proximity({
   //   controller: "GP2Y0A21YK",
   //   pin: "P9_39"
@@ -56,6 +66,8 @@ board.on("ready", function() {
 //After setup, status: green (good)
   led.on();
   led.color("green");
+  
+  logIMU();
 
   // distance.irRight.on("data", function(){
   //   console.log("Right: " + distance.irRight.cm);
@@ -63,52 +75,14 @@ board.on("ready", function() {
 
   // distance.irLeft.on("data", function(){
   //   console.log("Left: " + distance.irLeft.cm);
-  //   console.log("Right: " + distance.irRight.cm);
   // });
-
-  // for(var i = 0; i < 5; i++){
-  //   drive();
-  // }
-
-  var count = 0;
-  var gyroInput = ["X", "Y","Z","Pitch","Roll","Yaw","Rate"]
-  var accInput = ["X", "Y","Z","Pitch","Roll","Acceleration","Inclination", "Orientation"]
-
-  imu.on("data", function(){
-    gyroInput += [this.gyro.x, this.gyro.y, this.gyro.z, this.gyro.pitch, this.gyro.roll, this.gyro.yaw, this.gyro.rate]
-    accInput += [this.accelerometer.x, this.accelerometer.y, this.accelerometer.z, this.accelerometer.pitch, this.accelerometer.roll, this.accelerometer.acceleration, this.accelerometer.inclination, this.accelerometer.orientation]
-
-    count ++; //crude  solution. Save every 100 rows to file
-    if (count > 100){
-      var d = new Date(milliseconds);
-      csv.stringify(gyroInput, function(err, output){
-        fs.writeFile("gyroData" + d + ".txt", output, function(err) {
-          if(err) {
-              return console.log(err);
-          }
-          console.log("The gyroData file was saved!");
-        });
-      });
-      csv.stringify(accInput, function(err, output){
-        fs.writeFile("accData" + d + ".txt", output, function(err) {
-          if(err) {
-              return console.log(err);
-          }
-          console.log("The accData file was saved!");
-        });
-      });
-      count = 0; //reset count & inputs
-      gyroInput = ["X", "Y","Z","Pitch","Roll","Yaw","Rate"];
-      accInput = ["X", "Y","Z","Pitch","Roll","Acceleration","Inclination", "Orientation"];
-      led.color("purple");
-    }
-  });
 
   // this.repl.inject({
   //   servos: servos,
   //   anode: anode,
   //   imu: imu
   // });
+  
 });//End ready
 
 // function drive() {
@@ -117,6 +91,22 @@ board.on("ready", function() {
 //     servos.both.stop();
 //   });
 // }
+
+function logIMU(){
+  var count = 0;
+  imu.on("data", function(){
+    gyroInput += this.gyro.x + "," + this.gyro.y  + "," + this.gyro.z + "\n"
+    accInput += this.accelerometer.x + "," + this.accelerometer.y + "," +  this.accelerometer.z + "," +  this.accelerometer.pitch + "," +  this.accelerometer.roll + "," +  this.accelerometer.acceleration + "," +  this.accelerometer.inclination + "," +  this.accelerometer.orientation + "\n"
+    gyroLogger.write(gyroInput);
+    accLogger.write(accInput);
+    count ++
+    if (count === 10000){
+      led.color("blue");
+      logger.end();
+      board.emit("exit")
+    }
+  });
+}
 
 board.on("info", function(event){
 
