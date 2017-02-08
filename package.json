@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/lynch16/nodbot#readme",
   "dependencies": {
-    "beaglebone-io": "file://node_modules/beaglebone-io",
+    "beaglebone-io": "https://github.com/lynch16/beaglebone.git",
     "csv": "^1.1.1",
     "johnny-five": "^0.10.6"
   }
