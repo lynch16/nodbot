@@ -6,7 +6,7 @@ var board = new five.Board({
   io: new BeagleBone()
 });
 
-//logger Setup
+//logger Setup (remember to run from root of git directory since using relative routes)
 var gyroLogger= fs.createWriteStream('log/gyroData.txt', {
   flags: 'a'
 });
@@ -96,8 +96,8 @@ function drive() {
 function logIMU(){
   var count = 0;
   imu.on("data", function(){
-    gyroInput += this.gyro.x + "," + this.gyro.y  + "," + this.gyro.z + "\n"
-    accInput += this.accelerometer.x + "," + this.accelerometer.y + "," +  this.accelerometer.z + "," +  this.accelerometer.pitch + "," +  this.accelerometer.roll + "," +  this.accelerometer.acceleration + "," +  this.accelerometer.inclination + "," +  this.accelerometer.orientation + "\n"
+    gyroInput += this.gyro.x + "," + this.gyro.y  + "," + this.gyro.z + "," + Date.now() + "\n"
+    accInput += this.accelerometer.x + "," + this.accelerometer.y + "," +  this.accelerometer.z + "," +  this.accelerometer.pitch + "," +  this.accelerometer.roll + "," +  this.accelerometer.acceleration + "," +  this.accelerometer.inclination + "," +  this.accelerometer.orientation + "," + Date.now() + "\n"
     gyroLogger.write(gyroInput);
     accLogger.write(accInput);
     count ++
