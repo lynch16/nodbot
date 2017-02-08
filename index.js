@@ -35,28 +35,28 @@ board.on("ready", function() {
  });
 
 //Setup drivetrain
-  servos = {};
-  servos.left = new five.Servo ({
-    pin: "P8_13",
-    type: "continuous"
-  });
-  servos.right = new five.Servo({
-      pin: "P8_19",
-      type: "continuous",
-      invert: true
-  });
-  servos.both = new five.Servos([servos.left, servos.right]);
+  // servos = {};
+  // servos.left = new five.Servo ({
+  //   pin: "P8_13",
+  //   type: "continuous"
+  // });
+  // servos.right = new five.Servo({
+  //     pin: "P8_19",
+  //     type: "continuous",
+  //     invert: true
+  // });
+  // servos.both = new five.Servos([servos.left, servos.right]);
 
 //Setup distance sensors
-  distance = {};
-  distance.irRight = new five.Proximity({
-    controller: "GP2Y0A21YK",
-    pin: "P9_39"
-  });
-  distance.irLeft = new five.Proximity({
-    controller: "GP2Y0A21YK",
-    pin: "P9_40"
-  });
+  // distance = {};
+  // distance.irRight = new five.Proximity({
+  //   controller: "GP2Y0A21YK",
+  //   pin: "P9_39"
+  // });
+  // distance.irLeft = new five.Proximity({
+  //   controller: "GP2Y0A21YK",
+  //   pin: "P9_40"
+  // });
 
   // distance.usProx = new five.Proximity({
   //   controller: "HC-SR04",
@@ -67,8 +67,8 @@ board.on("ready", function() {
   led.on();
   led.color("green");
 
-  drive();
-  // logIMU();
+  // drive();
+  logIMU();
 
   // distance.irRight.on("data", function(){
   //   console.log("Right: " + distance.irRight.cm);
