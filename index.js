@@ -20,32 +20,32 @@ board.on("ready", function() {
 
 //Setup RGB LED (status indicator)
   led = new five.Led.RGB({
-   pins: {
+  pins: {
       red: "P9_21",
       green: "P9_14",
       blue: "P9_16"
-   },
-   isAnode: true
- });
+  },
+  isAnode: true
+});
 
-//Setup IMU (motion detector)
+// //Setup IMU (motion detector)
   imu = new five.IMU({
-     controller: "MPU6050",
-   freq: 100
- });
+    controller: "MPU6050",
+  freq: 100
+});
 
 //Setup drivetrain
-  // servos = {};
-  // servos.left = new five.Servo ({
-  //   pin: "P8_13",
-  //   type: "continuous"
-  // });
-  // servos.right = new five.Servo({
-  //     pin: "P8_19",
-  //     type: "continuous",
-  //     invert: true
-  // });
-  // servos.both = new five.Servos([servos.left, servos.right]);
+  servos = {};
+  servos.left = new five.Servo ({
+    pin: "P8_13",
+    type: "continuous"
+  });
+  servos.right = new five.Servo({
+      pin: "P8_19",
+      type: "continuous",
+      invert: true
+  });
+  servos.both = new five.Servos([servos.left, servos.right]);
 
 //Setup distance sensors
   // distance = {};
@@ -67,7 +67,7 @@ board.on("ready", function() {
   led.on();
   led.color("green");
 
-  // drive();
+  drive();
   logIMU();
 
   // distance.irRight.on("data", function(){
@@ -79,23 +79,26 @@ board.on("ready", function() {
   // });
 
   // this.repl.inject({
-  //   servos: servos,
-  //   anode: anode,
-  //   imu: imu
+  //   // servos: servos,
+  //   led: led
+  //   // imu: imu
   // });
 
 });//End ready
 
 function drive() {
+  led.color("blue")
   servos.both.cw();
   board.wait(3000, function(){
     servos.both.stop();
+    logger.end();
+    led.color("red")
   });
 }
 
 function logIMU(){
   var count = 0;
-  imu.on("data", function(){
+  imu.on("change", function(){
     gyroInput += this.gyro.x + "," + this.gyro.y  + "," + this.gyro.z + "," + Date.now() + "\n"
     accInput += this.accelerometer.x + "," + this.accelerometer.y + "," +  this.accelerometer.z + "," +  this.accelerometer.pitch + "," +  this.accelerometer.roll + "," +  this.accelerometer.acceleration + "," +  this.accelerometer.inclination + "," +  this.accelerometer.orientation + "," + Date.now() + "\n"
     gyroLogger.write(gyroInput);
