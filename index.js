@@ -7,10 +7,10 @@ var board = new five.Board({
 });
 
 //logger Setup (remember to run from root of git directory since using relative routes)
-var gyroLogger= fs.createWriteStream('log/gyroData.txt', {
+var gyroLogger= fs.createWriteStream('log/gyroData_' + Date.now() + '.txt', {
   flags: 'a'
 });
-var accLogger= fs.createWriteStream('log/accData.txt', {
+var accLogger= fs.createWriteStream('log/accData_' + Date.now() + '.txt', {
   flags: 'a'
 });
 
@@ -67,7 +67,7 @@ board.on("ready", function() {
   led.on();
   led.color("green");
 
-  drive();
+  // drive();
   logIMU();
 
   // distance.irRight.on("data", function(){
