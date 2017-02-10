@@ -28,7 +28,7 @@ board.on("ready", function() {
   isAnode: true
 });
 
-// //Setup IMU (motion detector)
+//Setup IMU (motion detector)
   imu = new five.IMU({
     controller: "MPU6050",
   freq: 100
@@ -48,7 +48,7 @@ board.on("ready", function() {
   servos.both = new five.Servos([servos.left, servos.right]);
 
 //Setup distance sensors
-  // distance = {};
+  distance = {};
   // distance.irRight = new five.Proximity({
   //   controller: "GP2Y0A21YK",
   //   pin: "P9_39"
@@ -91,7 +91,8 @@ function drive() {
   servos.both.cw();
   board.wait(3000, function(){
     servos.both.stop();
-    logger.end();
+    gyroLogger.end();
+    accLogger.end();
     led.color("red")
   });
 }
@@ -99,14 +100,15 @@ function drive() {
 function logIMU(){
   var count = 0;
   imu.on("change", function(){
-    gyroInput += this.gyro.x + "," + this.gyro.y  + "," + this.gyro.z + "," + Date.now() + "\n"
-    accInput += this.accelerometer.x + "," + this.accelerometer.y + "," +  this.accelerometer.z + "," +  this.accelerometer.pitch + "," +  this.accelerometer.roll + "," +  this.accelerometer.acceleration + "," +  this.accelerometer.inclination + "," +  this.accelerometer.orientation + "," + Date.now() + "\n"
+    gyroInput += this.gyro.x + "," + this.gyro.y  + "," + this.gyro.z + "," + Date.now() + count + "\n"
+    accInput += this.accelerometer.x + "," + this.accelerometer.y + "," +  this.accelerometer.z + "," +  this.accelerometer.pitch + "," +  this.accelerometer.roll + "," +  this.accelerometer.acceleration + "," +  this.accelerometer.inclination + "," +  this.accelerometer.orientation + "," + Date.now() + count + "\n"
     gyroLogger.write(gyroInput);
     accLogger.write(accInput);
     count ++
     if (count === 10000){
       led.color("blue");
-      logger.end();
+      gyroLogger.end();
+      accLogger.end();
       board.emit("exit")
     }
   });
