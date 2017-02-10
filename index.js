@@ -14,7 +14,7 @@ var accLogger= fs.createWriteStream('log/accData.txt', {
   flags: 'a'
 });
 
-var led, imu, servos, distance, gyroInput, accInput;
+var led, imu, servos, distance;
 
 board.on("ready", function() {
 
@@ -100,8 +100,8 @@ function drive() {
 function logIMU(){
   var count = 0;
   imu.on("change", function(){
-    gyroInput += this.gyro.x + "," + this.gyro.y  + "," + this.gyro.z + "," + Date.now() + count + "\n"
-    accInput += this.accelerometer.x + "," + this.accelerometer.y + "," +  this.accelerometer.z + "," +  this.accelerometer.pitch + "," +  this.accelerometer.roll + "," +  this.accelerometer.acceleration + "," +  this.accelerometer.inclination + "," +  this.accelerometer.orientation + "," + Date.now() + count + "\n"
+    var gyroInput = this.gyro.x + "," + this.gyro.y  + "," + this.gyro.z + "," + Date.now() + "," + count.toString() + "\n"
+    var accInput = this.accelerometer.x + "," + this.accelerometer.y + "," +  this.accelerometer.z + "," +  this.accelerometer.pitch + "," +  this.accelerometer.roll + "," +  this.accelerometer.acceleration + "," +  this.accelerometer.inclination + "," +  this.accelerometer.orientation + "," + Date.now() + "," + count.toString() + "\n"
     gyroLogger.write(gyroInput);
     accLogger.write(accInput);
     count ++
