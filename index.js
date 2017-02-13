@@ -1,3 +1,6 @@
+/* ----------------
+     Libraries & Vars
+    ------------------- */
 var csv = require('csv');
 var fs = require('fs')
 var five = require('johnny-five');
@@ -18,6 +21,9 @@ var led, imu, servos, distance;
 
 board.on("ready", function() {
 
+/* ----------------------------------------------------------
+        SETUP
+    ------------------- */
 //Setup RGB LED (status indicator)
   led = new five.Led.RGB({
   pins: {
@@ -26,13 +32,15 @@ board.on("ready", function() {
       blue: "P9_16"
   },
   isAnode: true
-});
+  });
 
 //Setup IMU (motion detector)
   imu = new five.IMU({
     controller: "MPU6050",
   freq: 100
-});
+  });
+  gyroLogger.write("x,y,z,time");
+  accLogger.write("x,y,z,pitch,roll,acceleration,inclination,orientation,time");
 
 //Setup drivetrain
   servos = {};
@@ -49,51 +57,80 @@ board.on("ready", function() {
 
 //Setup distance sensors
   distance = {};
-  // distance.irRight = new five.Proximity({
-  //   controller: "GP2Y0A21YK",
-  //   pin: "P9_39"
-  // });
-  // distance.irLeft = new five.Proximity({
-  //   controller: "GP2Y0A21YK",
-  //   pin: "P9_40"
-  // });
-
-  // distance.usProx = new five.Proximity({
-  //   controller: "HC-SR04",
-  //   pin: "__" //need to set pin
-  // });
+  distance.irRight = new five.Proximity({
+    controller: "GP2Y0A21YK",
+    pin: "P9_36"
+  });
+  distance.irLeft = new five.Proximity({
+    controller: "GP2Y0A21YK",
+    pin: "P9_38"
+  });
+  
+  /* ------------------------------------------------
+        START
+    ------------------- */
 
 //After setup, status: green (good)
   led.on();
   led.color("green");
-
+  
+  // stop();
   // drive();
-  logIMU();
-
-  // distance.irRight.on("data", function(){
-  //   console.log("Right: " + distance.irRight.cm);
-  // });
+  // logIMU();
+  // distance();
 
   // distance.irLeft.on("data", function(){
-  //   console.log("Left: " + distance.irLeft.cm);
+  //   if (distance.irLeft.cm < 6) {
+  //     servos.right.stop();
+  //   }
+  //   else
+  //     servos.both.cw();
   // });
 
-  // this.repl.inject({
-  //   // servos: servos,
-  //   led: led
-  //   // imu: imu
-  // });
+  this.repl.inject({
+    // servos: servos,
+    // led: led
+    mpu: mpu
+    // imu: imu
+  });
 
 });//End ready
+
+/* ------------------------------------------
+        FUNCTIONS
+    ------------------- */
+function distance(){
+  distance.irRight.on("data", function(){
+    console.log("Right: " + distance.irRight.cm);
+  });
+  distance.irLeft.on("data", function(){
+    console.log("Left: " + distance.irLeft.cm);
+  });
+}
+
+function stop() {
+  servos.both.cw();
+  board.wait(500, function(){
+    servos.both.stop();
+  })  
+}
+  
 
 function drive() {
   led.color("blue")
   servos.both.cw();
-  board.wait(3000, function(){
-    servos.both.stop();
-    gyroLogger.end();
-    accLogger.end();
-    led.color("red")
+  distance.irLeft.on("data", function(){
+  if (distance.irLeft.cm < 6) {
+    led.color("purple");
+    servos.left.stop();
+  }
+  else if (distance.irRight.cm < 6) {
+    led.color("orange");
+    servos.right.stop();
+  }
+  else
+    led.color("blue")
+    servos.both.cw();
   });
 }
 
@@ -113,6 +150,10 @@ function logIMU(){
     }
   });
 }
+
+/* -------------------------------------------------
+        MISC.
+    ------------------- */
 
 board.on("info", function(event){
 

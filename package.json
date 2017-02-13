@@ -19,6 +19,7 @@
   "dependencies": {
     "beaglebone-io": "https://github.com/lynch16/beaglebone.git",
     "csv": "^1.1.1",
-    "johnny-five": "^0.10.6"
+    "johnny-five": "^0.10.6",
+    "mpu9250": "^0.1.7"
   }
 }

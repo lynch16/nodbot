@@ -2,7 +2,7 @@ var mpu9250 = require('mpu9250');
 // Instantiate and initialize.
 var mpu = new mpu9250({
     // i2c path (default is '/dev/i2c-1')
-    device: '/dev/i2c-1',
+    device: '/dev/i2c-2',
 
     // mpu9250 address (default is 0x68)
     address: 0x68,
@@ -15,7 +15,7 @@ var mpu = new mpu9250({
     scaleValues: false,
 
     // Enable/Disable debug mode (default false)
-    DEBUG: false,
+    DEBUG: true,
 
     // ak8963 (magnetometer / compass) address (default is 0x0C)
     ak_address: 0x0C,
@@ -35,5 +35,7 @@ var mpu = new mpu9250({
     ACCEL_FS: 2
 });
 if (mpu.initialize()) {
+  console.log("Log:")
   console.log(mpu.getMotion9());
+  console.log(mpu.getTemperatureCelsiusDigital());
 }
